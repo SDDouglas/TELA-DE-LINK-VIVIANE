@@ -5,17 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="icon" href="./img/logo (2).png" type="image/png">
-  <title> STUDIO | VIVIANE ROJAS</title>
+  <title>STUDIO | VIVIANE ROJAS</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    .formulario {
+      display: none;
+      transition: all 0.3s ease;
+    }
+
+    .formulario.ativo {
+      display: block;
+    }
+  </style>
 </head>
 <body>
+
   <!-- FOTO DE PERFIL -->
-<div class="foto-perfil">
-  <img src="./img/Perfil.jpg" alt="Foto de perfil da profissional">
-</div>
+  <div class="foto-perfil">
+    <img src="./img/Perfil.jpg" alt="Foto de perfil da profissional">
+  </div>
 
   <div class="container">
-    <h1>Viviane Rojas </h1>
+    <h1>Viviane Rojas</h1>
     <p>Cuidar de você é a nossa paixão! Agende seu horário para serviços de manicure, pedicure e nail design com qualidade e carinho.</p>
 
     <div class="links">
@@ -32,70 +43,61 @@
       <input type="date" id="data" required />
       <input type="time" id="hora" required />
       <select id="servico">
-        <option value="Manicure Tradicional">Esmaltação em Gel</option>
-        <option value="Pedicure">Esmaltação em Gel com Blindagem</option>
-        <option value="Francesinha">Banho de Gel M/P</option>
-        <option value="Esmaltação em Gel">Banho de Gel  Encapsulada</option>
-        <option value="Spa dos Pés">Aplicação Natural</option>
-        <option value="Pedicure">Encapsuladas</option>
-        <option value="Francesinha">Baby Color ou Baby Glitter</option>
-        <option value="Esmaltação em Gel">Extra Longas</option>
-        <option value="Spa dos Pés">Esmaltada ou Francesa</option>
-        <option value="Esmaltação em Gel">Baby Boomer</option>
-        <option value="Esmaltação em Gel">Aplicação - Unhas Roídas</option>
-        <option value="Esmaltação em Gel">Unhas Roídas - Encapsulada</option>
-        <option value="Esmaltação em Gel">Extra Longa Natural ou Esmaltada</option>
-        <option value="Esmaltação em Gel">Extra Longa Baby Boomer</option>
-        <option value="Esmaltação em Gel">Extra Longa Baby Encapsulada</option>
-        
+        <option value="Esmaltação em Gel">Esmaltação em Gel</option>
+        <option value="Esmaltação em Gel com Blindagem">Esmaltação em Gel com Blindagem</option>
+        <option value="Banho de Gel M/P">Banho de Gel M/P</option>
+        <option value="Banho de Gel Encapsulada">Banho de Gel Encapsulada</option>
+        <option value="Aplicação Natural">Aplicação Natural</option>
+        <option value="Encapsuladas">Encapsuladas</option>
+        <option value="Baby Color ou Baby Glitter">Baby Color ou Baby Glitter</option>
+        <option value="Extra Longas">Extra Longas</option>
+        <option value="Esmaltada ou Francesa">Esmaltada ou Francesa</option>
+        <option value="Baby Boomer">Baby Boomer</option>
+        <option value="Aplicação - Unhas Roídas">Aplicação - Unhas Roídas</option>
+        <option value="Unhas Roídas - Encapsulada">Unhas Roídas - Encapsulada</option>
+        <option value="Extra Longa Natural ou Esmaltada">Extra Longa Natural ou Esmaltada</option>
+        <option value="Extra Longa Baby Boomer">Extra Longa Baby Boomer</option>
+        <option value="Extra Longa Baby Encapsulada">Extra Longa Baby Encapsulada</option>
       </select>
       <button onclick="enviarAgendamento()">Enviar para o WhatsApp</button>
     </div>
   </div>
+
   <script>
-    const binId = "6801bc948561e97a50021a90"; // ex: 661f9df8acd3cb34a8c45ad2
+    const binId = "6801bc948561e97a50021a90";
     const apiKey = "$2a$10$7KT3vS3/oy8wnIaZOOYkJeTwO3T0e74qM07TpIUgW13AsWgbPT4Wa";
 
     async function buscarHorarios() {
       const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-        headers: {
-          "X-Master-Key": apiKey
-        }
+        headers: { "X-Master-Key": apiKey }
       });
       const json = await res.json();
       return json.record.agendamentos || [];
     }
 
     async function salvarAgendamento(novoAgendamento) {
-  // Primeiro, busca os agendamentos mais atualizados
-  const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-    headers: {
-      "X-Master-Key": apiKey
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+        headers: { "X-Master-Key": apiKey }
+      });
+      const json = await res.json();
+      const horarios = json.record.agendamentos || [];
+
+      horarios.push(novoAgendamento);
+
+      await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Master-Key": apiKey
+        },
+        body: JSON.stringify({ agendamentos: horarios })
+      });
     }
-  });
-
-  const json = await res.json();
-  const horarios = json.record.agendamentos || [];
-
-  // Adiciona o novo agendamento
-  horarios.push(novoAgendamento);
-
-  // Agora salva de volta sem sobrescrever os existentes
-  await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Master-Key": apiKey
-    },
-    body: JSON.stringify({ agendamentos: horarios })
-  });
-}
-
 
     function abrirAgendamento() {
       const formulario = document.getElementById("formulario");
-      formulario.style.display = formulario.style.display === "none" ? "block" : "none"; // Alterna entre mostrar e esconder
-      formulario.scrollIntoView({ behavior: "smooth" }); // Rolagem suave
+      formulario.classList.toggle("ativo");
+      formulario.scrollIntoView({ behavior: "smooth" });
     }
 
     async function enviarAgendamento() {
@@ -112,21 +114,20 @@
       const chave = `${data}|${hora}`;
       const horarios = await buscarHorarios();
 
-      if (horarios.some(h => h === chave)) {
-  alert("Este horário já está agendado. Por favor, escolha outro.");
-  return;
-}
+      if (horarios.includes(chave)) {
+        alert("Este horário já está agendado. Por favor, escolha outro.");
+        return;
+      }
 
-
-      await salvarAgendamento(chave);
-
+      // Mensagem antes de salvar
       const mensagem = `*Agendamento - Viviane Rojas Studio* \n\n` +
         `*Nome:* ${nome}\n*Data:* ${data}\n*Hora:* ${hora}\n*Serviço:* ${servico}`;
-
       const url = `https://wa.me/5569992849737?text=${encodeURIComponent(mensagem)}`;
       window.open(url, "_blank");
+
+      // Salva o agendamento após abrir o WhatsApp
+      await salvarAgendamento(chave);
     }
   </script>
-  
 </body>
 </html>
