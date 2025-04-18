@@ -7,6 +7,18 @@
   <link rel="icon" href="./img/logo (2).png" type="image/png">
   <title>STUDIO | VIVIANE ROJAS</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Adicionando estilo para o formulário */
+    .formulario {
+      display: none;
+      /* Esconde o formulário por padrão */
+    }
+
+    .formulario.ativo {
+      display: block;
+      /* Mostra o formulário quando a classe "ativo" é aplicada */
+    }
+  </style>
 </head>
 <body>
 
@@ -105,9 +117,30 @@
       const chave = `${data}|${hora}`;
       const horarios = await buscarHorarios();
 
-      if (horarios.includes(chave)) {
-        alert("Este horário já está agendado. Por favor, escolha outro.");
-        return;
+      // Verifica se o horário já está agendado
+      const agendamentoExistente = horarios.find(agendamento => agendamento.chave === chave);
+      
+      if (agendamentoExistente) {
+        const horaAgendada = new Date(agendamentoExistente.dataHora);
+        const agora = new Date();
+
+        // Verifica se passaram 12 horas desde o agendamento
+        if (agora - horaAgendada >= 12 * 60 * 60 * 1000) {
+          // Se já passou 12 horas, libera o horário
+          // Remover o agendamento expirado
+          horarios.splice(horarios.indexOf(agendamentoExistente), 1);
+          await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Master-Key": apiKey
+            },
+            body: JSON.stringify({ agendamentos: horarios })
+          });
+        } else {
+          alert("Este horário já está agendado. Por favor, escolha outro.");
+          return;
+        }
       }
 
       const mensagem = `*Agendamento - Viviane Rojas Studio* \n\n` +
@@ -115,7 +148,13 @@
       const url = `https://wa.me/5569992849737?text=${encodeURIComponent(mensagem)}`;
       window.open(url, "_blank");
 
-      await salvarAgendamento(chave);
+      // Salva o novo agendamento com a data e hora do agendamento
+      await salvarAgendamento({
+        chave,
+        nome,
+        dataHora: new Date(`${data}T${hora}:00`).toISOString(),
+        servico
+      });
     }
   </script>
 </body>
