@@ -7,16 +7,6 @@
   <link rel="icon" href="./img/logo (2).png" type="image/png">
   <title>STUDIO | VIVIANE ROJAS</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    .formulario {
-      display: none;
-      transition: all 0.3s ease;
-    }
-
-    .formulario.ativo {
-      display: block;
-    }
-  </style>
 </head>
 <body>
 
@@ -33,7 +23,7 @@
       <a href="https://wa.me/5569992849737" target="_blank"><i class="bi bi-whatsapp"></i> Fale pelo WhatsApp</a>
       <a href="https://www.instagram.com/rojas.viviane?igsh=OXBydzZob2Z1cTZy&utm_source=qr" target="_blank"><i class="bi bi-instagram"></i> Instagram</a>
       <a href="https://www.facebook.com/share/162aoFhtZy/?mibextid=wwXIfr" target="_blank"><i class="bi bi-facebook"></i> Facebook</a>
-      <button onclick="abrirAgendamento()"><i class="bi bi-calendar-week"></i> Agendar Horário</button>
+      <a href="#" onclick="abrirAgendamento()"><i class="bi bi-calendar-week"></i> Agendar Horário</a>
     </div>
 
     <!-- Formulário de agendamento -->
@@ -59,7 +49,8 @@
         <option value="Extra Longa Baby Boomer">Extra Longa Baby Boomer</option>
         <option value="Extra Longa Baby Encapsulada">Extra Longa Baby Encapsulada</option>
       </select>
-      <button onclick="enviarAgendamento()">Enviar para o WhatsApp</button>
+      <button onclick="enviarAgendamento()">Enviar para o WhatsApp</button><br><br>
+      <a href="https://taniarojas.my.canva.site/nails-designer-por-viviane-rojas-criando-experi-ncias-visuais-pdf" target="_blank">Catálogo</a>
     </div>
   </div>
 
@@ -119,13 +110,11 @@
         return;
       }
 
-      // Mensagem antes de salvar
       const mensagem = `*Agendamento - Viviane Rojas Studio* \n\n` +
         `*Nome:* ${nome}\n*Data:* ${data}\n*Hora:* ${hora}\n*Serviço:* ${servico}`;
       const url = `https://wa.me/5569992849737?text=${encodeURIComponent(mensagem)}`;
       window.open(url, "_blank");
 
-      // Salva o agendamento após abrir o WhatsApp
       await salvarAgendamento(chave);
     }
   </script>
